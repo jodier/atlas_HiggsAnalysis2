@@ -61,6 +61,11 @@ void TLeptonFinder::Loop(void)
 
 		LoadEvent(event, eventNr);
 
+		if(event == 0)
+		{
+			triggerInit();
+		}
+
 		fixeEnergy();
 
 		/*---------------------------------------------------------*/
@@ -159,12 +164,15 @@ void TLeptonFinder::Loop(void)
 
 			/**/
 
+			m_l[0].l_z0[i] = el_trackz0pvunbiased->at(index);
+			m_l[0].l_d0[i] = el_trackd0pvunbiased->at(index);
+
 			m_l[0].weight1[i] = eventGetWeight1();
 			m_l[0].weight2[i] = eventGetWeight2();
 			m_l[0].weight3[i] = eventGetWeight3(index, TYPE_ELECTRON);
 
 			m_l[0].l_tight[i] = el_tight->at(index) != 0;
-			m_l[0].l_triggerMatch[i] = 0;//triggerMatch(index, TYPE_ELECTRON);
+			m_l[0].l_triggerMatch[i] = triggerMatch(index, TYPE_ELECTRON);
 
 			m_l[0].l_charge[i] = el_charge->at(index);
 			m_l[0].l_e[i] = el_cl_E->at(index);
@@ -191,13 +199,29 @@ void TLeptonFinder::Loop(void)
 				}
 			}
 
-			//m_l[0].l_f1[i] = el_f1->at(index);
-			//m_l[0].l_rphi[i] = el_rphi->at(index);
-			//m_l[0].l_nBlayerHits[i] = el_nBLHits->at(index);
-			//m_l[0].l_nPixelHits[i] = el_nPixHits->at(index);
-			//m_l[0].l_rTRT[i] = (el_nTRTHits->at(index) + el_nTRTOutliers->at(index)) > 0 ? float(el_nTRTHighTHits->at(index) + el_nTRTHighTOutliers->at(index)) / float(el_nTRTHits->at(index) + el_nTRTOutliers->at(index)) : 0.0f;
+			m_l[0].l_f1[i] = el_f1->at(index);
+			m_l[0].l_rphi[i] = el_rphi->at(index);
+			m_l[0].l_nBlayerHits[i] = el_nBLHits->at(index);
+			m_l[0].l_nPixelHits[i] = el_nPixHits->at(index);
+			m_l[0].l_rTRT[i] = (el_nTRTHits->at(index) + el_nTRTOutliers->at(index)) > 0 ? float(el_nTRTHighTHits->at(index) + el_nTRTHighTOutliers->at(index)) / float(el_nTRTHits->at(index) + el_nTRTOutliers->at(index)) : 0.0f;
 
+			/**/
+#ifdef __IS_MC
+			m_l[0].l_type[i] = el_type->at(index);
+			m_l[0].l_origin[i] = el_origin->at(index);
+			m_l[0].l_typebkg[i] = el_typebkg->at(index);
+			m_l[0].l_originbkg[i] = el_originbkg->at(index);
+			m_l[0].l_truth_type[i] = el_truth_type->at(index);
+			m_l[0].l_truth_mothertype[i] = el_truth_mothertype->at(index);
+#else
+			m_l[0].l_type[i] = -999999;
+			m_l[0].l_origin[i] = -999999;
+			m_l[0].l_typebkg[i] = -999999;
+			m_l[0].l_originbkg[i]= -999999;
+			m_l[0].l_truth_type[i] = -999999;
+			m_l[0].l_truth_mothertype[i] = -999999;
 
+#endif
 		}
 
 
@@ -227,12 +251,15 @@ void TLeptonFinder::Loop(void)
 
 			/**/
 
+			m_l[1].l_z0[i] = mu_staco_z0_exPV->at(index);
+			m_l[1].l_d0[i] = mu_staco_d0_exPV->at(index);
+
 			m_l[1].weight1[i] = eventGetWeight1();
 			m_l[1].weight2[i] = eventGetWeight2();
 			m_l[1].weight3[i] = eventGetWeight3(index, TYPE_MUON_STACO);
 
 			m_l[1].l_tight[i] = mu_staco_tight->at(index) != 0;
-			m_l[1].l_triggerMatch[i] = 0;//triggerMatch(index, TYPE_MUON_STACO);
+			m_l[1].l_triggerMatch[i] = triggerMatch(index, TYPE_MUON_STACO);
 
 			m_l[1].l_charge[i] = mu_staco_charge->at(index);
 			m_l[1].l_e[i] = mu_staco_E->at(index);
@@ -254,12 +281,28 @@ void TLeptonFinder::Loop(void)
 				}
 			}
 
-			//m_l[1].l_f1[i] = el_f1->at(index);
-			//m_l[1].l_rphi[i] = el_rphi->at(index);
-			//m_l[1].l_nBlayerHits[i] = el_nBLHits->at(index);
-			//m_l[1].l_nPixelHits[i] = el_nPixHits->at(index);
-			//m_l[1].l_rTRT[i] = (el_nTRTHits->at(index) + el_nTRTOutliers->at(index)) > 0 ? float(el_nTRTHighTHits->at(index) + el_nTRTHighTOutliers->at(index)) / float(el_nTRTHits->at(index) + el_nTRTOutliers->at(index)) : 0.0f;
+			m_l[1].l_f1[i] = -999999;
+			m_l[1].l_rphi[i] = -999999;
+			m_l[1].l_nBlayerHits[i] = -999999;
+			m_l[1].l_nPixelHits[i] = -999999;
+			m_l[1].l_rTRT[i] = -999999;
 
+			/**/
+
+			m_l[1].l_type[i] = -999999;
+			m_l[1].l_origin[i] = -999999;
+			m_l[1].l_typebkg[i] = -999999;
+			m_l[1].l_originbkg[i] = -999999;
+#ifdef __IS_MC
+
+			m_l[1].l_truth_type[i] = mu_staco_truth_type->at(index);
+			m_l[1].l_truth_mothertype[i] = mu_staco_truth_mothertype->at(index);
+
+#else
+			m_l[1].l_truth_type[i] = -999999;
+			m_l[1].l_truth_mothertype[i] = -999999;
+
+#endif
 		}
 
 		/*---------------------------------------------------------*/

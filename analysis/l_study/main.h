@@ -18,23 +18,19 @@ class TLeptonFinder: public TLeptonAnalysis
   public:
 	TTree m_tree1;
 	TTree m_tree2;
-	TTree m_tree3;
-	TTree m_tree4;
 
 	TLeptonFinder(TChain *chain): TLeptonAnalysis(chain)
 	{
 		m_tree1.SetName("eSTACO");
-		m_tree2.SetName("eMUID");
-		m_tree3.SetName("muSTACO");
-		m_tree4.SetName("muMUID");
+		m_tree2.SetName("muSTACO");
 
-		TTree *LTreeArray[4] = {&m_tree1, &m_tree2, &m_tree3, &m_tree4};
+		TTree *LTreeArray[2] = {&m_tree1, &m_tree2};
 
 		/*---------------------------------------------------------*/
 		/* LEPTON ANALYSIS					   */
 		/*---------------------------------------------------------*/
 
-		for(int i = 0; i < 4; i++)
+		for(int i = 0; i < 2; i++)
 		{
 			TTree *tree = LTreeArray[i];
 
@@ -53,6 +49,9 @@ class TLeptonFinder: public TLeptonAnalysis
 			/**/
 
 			tree->Branch("n", &m_l[i].n, "n" "/I");
+
+			tree->Branch("l_z0", m_l[i].l_z0, "l_z0[n]/F");
+			tree->Branch("l_d0", m_l[i].l_d0, "l_d0[n]/F");
 
 			tree->Branch("weight1", m_l[i].weight1, "weight1[n]/F");
 			tree->Branch("weight2", m_l[i].weight2, "weight2[n]/F");
@@ -78,6 +77,14 @@ class TLeptonFinder: public TLeptonAnalysis
 			tree->Branch("l_nPixelHits", m_l[i].l_nPixelHits, "l_nPixelHits[n]/I");
 			tree->Branch("l_rTRT", m_l[i].l_rTRT, "l_rTRT[n]/F");
 
+			/**/
+
+			tree->Branch("l_type", m_l[i].l_type, "l_type[n]/F");
+			tree->Branch("l_origin", m_l[i].l_origin, "l_origin[n]/F");
+			tree->Branch("l_typebkg", m_l[i].l_typebkg, "l_typebkg[n]/F");
+			tree->Branch("l_originbkg", m_l[i].l_originbkg, "l_originbkg[n]/F");
+			tree->Branch("l_truth_type", m_l[i].l_truth_type, "l_truth_type[n]/F");
+			tree->Branch("l_truth_mothertype", m_l[i].l_truth_mothertype, "l_truth_mothertype[n]/F");
 		}
 
 		/*---------------------------------------------------------*/
@@ -103,6 +110,9 @@ class TLeptonFinder: public TLeptonAnalysis
 
 		Int_t n;
 
+		Float_t l_z0[MAX];
+		Float_t l_d0[MAX];
+
 		Float_t weight1[MAX];
 		Float_t weight2[MAX];
 		Float_t weight3[MAX];
@@ -126,7 +136,16 @@ class TLeptonFinder: public TLeptonAnalysis
 		Int_t l_nPixelHits[MAX];
 		Float_t l_rTRT[MAX];
 
-	} m_l[4];
+		/**/
+
+		Float_t l_type[MAX];
+		Float_t l_origin[MAX];
+		Float_t l_typebkg[MAX];
+		Float_t l_originbkg[MAX];
+		Float_t l_truth_type[MAX];
+		Float_t l_truth_mothertype[MAX];
+
+	} m_l[2];
 
 };
 
