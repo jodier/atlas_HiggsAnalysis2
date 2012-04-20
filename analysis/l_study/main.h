@@ -59,6 +59,7 @@ class TLeptonFinder: public TLeptonAnalysis
 			tree->Branch("weight3", m_l[i].weight3, "weight3[n]/F");
 
 			tree->Branch("l_tight", m_l[i].l_tight, "l_tight[n]/I");
+			tree->Branch("l_triggerMatch", m_l[i].l_triggerMatch, "l_triggerMatch[n]/I");
 
 			tree->Branch("l_charge", m_l[i].l_charge, "l_charge[n]/F");
 			tree->Branch("l_e", m_l[i].l_e, "l_e[n]/F");
@@ -70,6 +71,13 @@ class TLeptonFinder: public TLeptonAnalysis
 			tree->Branch("l_tkIso20", m_l[i].l_tkIso20, "l_tkIso20[n]/F");
 			tree->Branch("l_clIso20", m_l[i].l_clIso20, "l_clIso20[n]/F");
 			tree->Branch("l_d0sigma", m_l[i].l_d0sigma, "l_d0sigma[n]/F");
+
+			tree->Branch("l_f1", m_l[i].l_f1, "l_f1[n]/F");
+			tree->Branch("l_rphi", m_l[i].l_rphi, "l_rphi[n]/F");
+			tree->Branch("l_nBlayerHits", m_l[i].l_nBlayerHits, "l_nBlayerHits[n]/I");
+			tree->Branch("l_nPixelHits", m_l[i].l_nPixelHits, "l_nPixelHits[n]/I");
+			tree->Branch("l_rTRT", m_l[i].l_rTRT, "l_rTRT[n]/F");
+
 		}
 
 		/*---------------------------------------------------------*/
@@ -100,6 +108,7 @@ class TLeptonFinder: public TLeptonAnalysis
 		Float_t weight3[MAX];
 
 		Int_t l_tight[MAX];
+		Int_t l_triggerMatch[MAX];
 
 		Float_t l_charge[MAX];
 		Float_t l_e[MAX];
@@ -110,6 +119,12 @@ class TLeptonFinder: public TLeptonAnalysis
 		Float_t l_clIso20[MAX];
 		Float_t l_tkIso20[MAX];
 		Float_t l_d0sigma[MAX];
+
+		Float_t l_f1[MAX];
+		Float_t l_rphi[MAX];
+		Int_t l_nBlayerHits[MAX];
+		Int_t l_nPixelHits[MAX];
+		Float_t l_rTRT[MAX];
 
 	} m_l[4];
 

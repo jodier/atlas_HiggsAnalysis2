@@ -2,7 +2,7 @@ void D3PDSkimmer_GSF(void)
 {
 	TChain *chain = new TChain("physics");
 
-	chain->Add("/scratch/data2011/mc11c/H130.root");
+	chain->Add("/quark1/tiouchi/data11_7TeV.00191715.physics_Muons.merge.NTUP_HSG2.f414_m1025_p761_p762_tid577625_00/NTUP_HSG2.577625._000040.root");
 
 	/*-----------------------------------------------------------------*/
 
@@ -345,7 +345,7 @@ void D3PDSkimmer_GSF(void)
 
 	system("sed -i -e \"s/   el_GSF/   el/g\" THiggsD3PD.h");
 
-	system("sed -i -e \"s/#include <TFile.h>/&\\n\\n#define __IS_MC/g\" THiggsD3PD.h");
+	system("sed -i -e \"s/#include <TFile.h>/&\\n\\n#define __IS_DATA/g\" THiggsD3PD.h");
 
 	/*-----------------------------------------------------------------*/
 

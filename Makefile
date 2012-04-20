@@ -65,7 +65,7 @@ OBJS7         = analysis/l_study/main.o analysis/higgs_analysis/triggers.o analy
 
 #############################################################################
 
-all: core $(OBJS2) $(OBJS3)# $(OBJS5) $(OBJS6) $(OBJS7)
+all: core $(OBJS2) $(OBJS3)  $(OBJS7) #$(OBJS5) $(OBJS6)
 #	@cd $(DIR)/tools && make && cd $(DIR)
 
 	$(LD) $(LDFLAGS) -o higgs_analysis $(OBJS2) $(LIBS) -L. -lcore $(ATLASLIBS)
@@ -73,11 +73,11 @@ all: core $(OBJS2) $(OBJS3)# $(OBJS5) $(OBJS6) $(OBJS7)
 #	$(LD) $(LDFLAGS) -o       eff      $(OBJS4) $(LIBS) $(ATLASLIBS) -lRooFitCore -lRooFit
 #	$(LD) $(LDFLAGS) -o      mass      $(OBJS5) $(LIBS) $(ATLASLIBS)
 #	$(LD) $(LDFLAGS) -o   ZcandPeriod  $(OBJS6) $(LIBS) $(ATLASLIBS)
-#	$(LD) $(LDFLAGS) -o     l_study    $(OBJS7) $(LIBS) -L. -lcore $(ATLASLIBS)
+	$(LD) $(LDFLAGS) -o     l_study    $(OBJS7) $(LIBS) -L. -lcore $(ATLASLIBS)
 
 #############################################################################
 
-ALL: core $(OBJS2) $(OBJS3)# $(OBJS5) $(OBJS6) $(OBJS7)
+ALL: core $(OBJS2) $(OBJS3) $(OBJS7) # $(OBJS5) $(OBJS6)
 	@cd $(DIR)/tools && make all && cd $(DIR)
 
 	$(LD) $(LDFLAGS) -o higgs_analysis $(OBJS2) $(LIBS) -L. -lcore $(ATLASLIBS)
@@ -85,7 +85,7 @@ ALL: core $(OBJS2) $(OBJS3)# $(OBJS5) $(OBJS6) $(OBJS7)
 #	$(LD) $(LDFLAGS) -o       eff      $(OBJS4) $(LIBS) $(ATLASLIBS) -lRooFitCore -lRooFit
 #	$(LD) $(LDFLAGS) -o      mass      $(OBJS5) $(LIBS) $(ATLASLIBS)
 #	$(LD) $(LDFLAGS) -o   ZcandPeriod  $(OBJS6) $(LIBS) $(ATLASLIBS)
-#	$(LD) $(LDFLAGS) -o     l_study    $(OBJS7) $(LIBS) -L. -lcore $(ATLASLIBS)
+	$(LD) $(LDFLAGS) -o     l_study    $(OBJS7) $(LIBS) -L. -lcore $(ATLASLIBS)
 
 #############################################################################
 
