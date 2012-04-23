@@ -1,0 +1,190 @@
+/*=================================================================* 
+ * Implementation of ElectronTriggerMatching
+ *=================================================================*/
+#include "TrigMuonEfficiency/ChainEntry.h"
+#include "TrigMuonEfficiency/ElectronTriggerMatching.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <TMath.h>
+
+
+/*=================================================================* 
+ * public methods
+ *=================================================================*/
+bool
+ElectronTriggerMatching::match(const double eta,
+                               const double phi,
+                               const std::string& chain)
+{
+  const int chainIndex = getChainIndex(chain);
+  if (chainIndex < 0) return false;
+  const std::vector<int> RoIIndex = MTT_CPP__trig_Nav_chain_RoIIndex->at(chainIndex);
+  const std::vector<int> RoIType = MTT_CPP__trig_Nav_chain_RoIType->at(chainIndex);
+
+  for (size_t iRoI = 0; iRoI < RoIIndex.size(); ++iRoI) {
+    if (RoIType[iRoI] != ChainEntry::kRoIType_EF_e) continue;
+
+    const int index = RoIIndex[iRoI];
+    const std::vector<int> container = MTT_CPP__trig_RoI_EF_e_egammaContainer_egamma_Electrons->at(index);
+    const std::vector<int> status = MTT_CPP__trig_RoI_EF_e_egammaContainer_egamma_ElectronsStatus->at(index);
+    for (size_t iCont = 0; iCont < container.size(); ++iCont) {
+      if (not status.at(iCont)) continue;
+      const int id = container.at(iCont);
+      double dr = dR(eta, phi, MTT_CPP__trig_EF_el_eta->at(id), MTT_CPP__trig_EF_el_phi->at(id));
+      if (dr < m_matchingDr) return true;
+    }
+  }
+
+  return false;
+}
+
+
+
+/*-----------------------------------------------------------------* 
+ * for developers
+ *-----------------------------------------------------------------*/
+void
+ElectronTriggerMatching::showSMKeys()
+{
+  std::map<int, std::map<std::string, int> >::const_iterator p;
+  std::cout << "ElectronTriggerMatching\t" << "INFO\t" << "SMKeys:";
+  for (p = m_MapOfChainIdMap.begin(); p != m_MapOfChainIdMap.end(); ++p) {
+    std::cout << p->first << ", ";
+  }
+  std::cout << std::endl;
+}
+
+
+void
+ElectronTriggerMatching::dumpChainIdMap(const int SMK)
+{
+  if (m_MapOfChainIdMap.find(SMK) == m_MapOfChainIdMap.end()) {
+    std::cerr << "ElectronTriggerMatching\t" << "ERROR\t"
+              << "ChainIdMap for SMK = " << SMK << " is not stored." << std::endl;
+    return;
+  }
+
+  std::map<std::string, int> ChainIdMap = m_MapOfChainIdMap[SMK];
+  std::map<std::string, int>::const_iterator p;
+  std::cout << "ElectronTriggerMatching\t" << "INFO\t"
+            << "dump ChainIdMap for SMKeys:" << SMK << std::endl;
+
+  for (p = ChainIdMap.begin(); p != ChainIdMap.end(); ++p) {
+    std::cout << p->first << "\t" << p->second << std::endl;
+  }
+}
+
+
+void
+ElectronTriggerMatching::createChainIdMapFile(const int SMK)
+{
+  if (m_MapOfChainIdMap.find(SMK) == m_MapOfChainIdMap.end()) {
+    std::cerr << "ElectronTriggerMatching\t" << "ERROR\t"
+              << "ChainIdMap for SMK = " << SMK << " is not stored." << std::endl;
+    return;
+  }
+
+  std::map<std::string, int> ChainIdMap = m_MapOfChainIdMap[SMK];
+  std::map<std::string, int>::const_iterator p;
+
+  std::ofstream ofs("ElectronChainIdMap.h");
+  ofs << "void ElectronTriggerMatching::createChainIdMapFromFile() {" << "\n";
+  ofs << "  " << "std::map<std::string, int> ChainIdMap;" << "\n";
+  for (p = ChainIdMap.begin(); p != ChainIdMap.end(); ++p) {
+    ofs << "  " << "ChainIdMap.insert(std::pair<std::string, int>(\"" << p->first << "\", " << p->second << "));" << "\n";
+  }
+  ofs << "  " << "m_MapOfChainIdMap.insert(std::pair<int, std::map<std::string, int> >(-1, ChainIdMap));" << "\n";
+  ofs << "}" << std::endl;
+}
+
+
+/*=================================================================* 
+ * private methods
+ *=================================================================*/
+double
+ElectronTriggerMatching::dR(const double eta1,
+                            const double phi1,
+                            const double eta2,
+                            const double phi2)
+{
+  double deta = fabs(eta1 - eta2);
+  double dphi = fabs(phi1 - phi2) < TMath::Pi() ? fabs(phi1 - phi2) : 2*TMath::Pi() - fabs(phi1 - phi2);
+  return sqrt(deta*deta + dphi*dphi);
+}
+
+
+int
+ElectronTriggerMatching::getChainIndex(const std::string& chain)
+{
+  int smk = static_cast<int>(MTT_CPP__trig_DB_SMK);
+  std::map<std::string, int> ChainIdMap = (m_MapOfChainIdMap.count(smk)) ? m_MapOfChainIdMap[smk] : m_MapOfChainIdMap[-1];
+
+  if (ChainIdMap.find(chain) == ChainIdMap.end()) {
+    if (m_NotFoundChain.find(chain) == m_NotFoundChain.end()) {
+      std::cerr << "ElectronTriggerMatching\t" << "ERROR\t"
+                << chain << " does not exist in ChainIdMap for SMK = " << smk
+                << " (if SMK = -1, it means the Map is created from TrigMuonEfficiency/ElectronChainIdMap.h)" << std::endl;
+      m_NotFoundChain.insert(chain);
+    }
+    return -1;
+  }
+
+  const short ChainId = static_cast<short>(ChainIdMap[chain]);
+  for (int iChain = 0; iChain < MTT_CPP__trig_Nav_n; ++iChain) {
+    if (MTT_CPP__trig_Nav_chain_ChainId->at(iChain) == ChainId) return iChain;
+  }
+
+  if (m_NotFoundChain.find(chain) == m_NotFoundChain.end()) {
+    std::cerr << "ElectronTriggerMatching\t" << "ERROR\t"
+              << chain << " does not exist in Flat Navigation Branch." << std::endl;
+    m_NotFoundChain.insert(chain);
+  }
+  return -1;
+}
+
+
+void
+ElectronTriggerMatching::readTrigConfTree(TTree* TrigConfTree)
+{
+  int smk=-9999;
+  std::map<std::string, int>* hltmap=0;
+
+  if (TrigConfTree) {
+    TrigConfTree->SetBranchAddress("SMK", &smk);
+    TrigConfTree->SetBranchAddress("HLTNameMap", &hltmap);
+
+    TrigConfTree->GetEntry(0);
+    if (not ((smk != -9999) and hltmap)) {
+      std::cerr << "ElectronTriggerMatching\t" << "ERROR\t"
+                << "TrigConfTree does exist, but could not SetBranchAddress for SMK and HLTNameMap." << std::endl;
+      return;
+    }
+
+    std::map<std::string, int>::const_iterator p;
+    for (int iEntry = 0; iEntry < TrigConfTree->GetEntries(); ++iEntry) {
+      TrigConfTree->GetEntry(iEntry);
+      if (m_MapOfChainIdMap.count(smk)) continue;
+
+      std::map<std::string, int> ChainIdMap;
+      for (p = hltmap->begin(); p != hltmap->end(); ++p) {
+        if ((p->first.find("EF_e") != 0) and
+            (p->first.find("EF_2e") != 0)) continue;
+
+        int id = p->second;
+        if (p->first.find("EF_") == 0) id += ChainEntry::kEFChainIdOffset;
+        ChainIdMap.insert(std::pair<std::string, int>(p->first, id));
+      }
+      m_MapOfChainIdMap.insert(std::pair<int, std::map<std::string, int> >(smk, ChainIdMap));
+    }
+
+  } else {
+    std::cerr << "ElectronTriggerMatching\t" << "inf> " << "Create ChainIdMap from TrigMuonEfficiency/ElectronChainIdMap.h.\n";
+    std::cerr << std::endl;
+    createChainIdMapFromFile();
+  }
+}
+
+
+#include "TrigMuonEfficiency/ElectronChainIdMap.h"
+// eof
