@@ -172,6 +172,7 @@ void TLeptonFinder::Loop(void)
 			m_l[0].weight3[i] = eventGetWeight3(index, TYPE_ELECTRON);
 
 			m_l[0].l_tight[i] = el_tight->at(index) != 0;
+
 			m_l[0].l_triggerMatch[i] = triggerMatch(index, TYPE_ELECTRON);
 
 			m_l[0].l_charge[i] = el_charge->at(index);

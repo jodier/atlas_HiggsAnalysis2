@@ -39,7 +39,6 @@ ElectronTriggerMatching::matchDielectron(const TLorentzVector& electron1,
   EFelectron trkId1, trkId2, dummy;
   const double dr1 = matchedTrackDetail(trkId1, dummy, electron1.Eta(), electron1.Phi(), chain);
   const double dr2 = matchedTrackDetail(trkId2, dummy, electron2.Eta(), electron2.Phi(), chain);
-
   if (trkId1.valid and trkId2.valid) {
     if (isEqual(trkId1.roi, trkId2.roi) or 
         (isEqual(trkId1.eta, trkId2.eta) and
@@ -50,7 +49,6 @@ ElectronTriggerMatching::matchDielectron(const TLorentzVector& electron1,
         matchedTrackDetail(trkId2, trkId1, electron2.Eta(), electron2.Phi(), chain);
     }
   }
-  
   result1 = trkId1.valid; 
   result2 = trkId2.valid; 
   return true; 
